@@ -2,15 +2,17 @@
 # Build stage
 #
 FROM maven:3.8.7 AS build
+WORKDIR /app
 COPY . .
 RUN mvn clean package -Pprod -DskipTests
 
 #
 # Package stage
 #
-FROM openjdk:18
-COPY --from=build /target/mastermind-webapp-0.0.1-SNAPSHOT.jar mastermind-webapp-docker.jar
-# ENV PORT=8080
+FROM eclipse-temurin:18-jre
+WORKDIR /app
+COPY --from=build /app/target/mastermind-webapp-0.0.1-SNAPSHOT.jar mastermind-webapp-docker.jar
+
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "mastermind-webapp-docker.jar"]
 
